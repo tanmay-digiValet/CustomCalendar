@@ -1,0 +1,15 @@
+{
+  "originHash" : "b057749ded86ca6ebc04258ec54ae5cf83b9f6e6e6fcc351493f3221817abde3",
+  "pins" : [
+    {
+      "identity" : "dvutility",
+      "kind" : "remoteSourceControl",
+      "location" : "https://dvgit.digivalet.com/scm/ip/dvutility.git",
+      "state" : {
+        "revision" : "24198c060fb4af1b243964b247fa150539378bf6",
+        "version" : "1.1.6"
+      }
+    }
+  ],
+  "version" : 3
+}
