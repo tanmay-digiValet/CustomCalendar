@@ -48,16 +48,8 @@ struct Temp: View {
                         .datePickerStyle(.wheel)
                         .labelsHidden() // Hides the label if needed
                         
-                    Color.white
-                        .frame(width: 60, height: 180)
-                        .offset(x: -115)
                     
-                    Color(red: 242/255, green: 242/255, blue: 243/255)
-                        .cornerRadius(10)
-                        .frame(width: 30, height: 35)
-                        .offset(x: -85)
                 }
-                .offset(x: -30)
                 Text("Selected: \(formattedDate)")
                     .padding()
             }

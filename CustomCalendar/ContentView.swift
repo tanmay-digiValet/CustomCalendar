@@ -20,11 +20,11 @@ struct ContentView: View {
 //    @State var mode: Mode = .single
     @State var mode: Mode = .range
     @State var monthSelector = false
-    var disabledDays: [Weekday] = [.saturday, .sunday]
+    var disabledDays: [Weekday] = [.sunday]
     var disabledDates: [Date] = [
-        (Date.now.createDate(year: 2025, month: 3, day: 11) ?? Date.now),
-        (Date.now.createDate(year: 2025, month: 3, day: 12) ?? Date.now),
-        (Date.now.createDate(year: 2025, month: 3, day: 19) ?? Date.now)
+        (Date.now.createDate(year: 2025, month: 9, day: 11) ?? Date.now),
+        (Date.now.createDate(year: 2025, month: 9, day: 12) ?? Date.now),
+        (Date.now.createDate(year: 2025, month: 9, day: 19) ?? Date.now)
     ]
     
     var body: some View {

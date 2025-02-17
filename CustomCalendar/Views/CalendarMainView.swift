@@ -19,7 +19,7 @@ struct CalendarMainView: View {
     @Binding var mode: Mode
     
     // MARK: Local states and variables
-    // MARK: initially assigned lowerBound of permissibleRange (in onAppear),
+    // MARK: initially assigned to first date of lowerBound of permissibleRange (in onAppear),
     // MARK: intended to keep track and enable transition of active month and year.
     @State var helperDate: Date = Date.now.monthStart
     @State var selectedDate1: Date? = nil
@@ -181,18 +181,9 @@ struct MonthYearPickerView: View {
                     )
                         .datePickerStyle(.wheel)
                         .labelsHidden()
-                    
-                    Color.white
-                        .frame(width: 60, height: 180)
-                        .offset(x: -115)
-                    
-                    Color(red: 242/255, green: 242/255, blue: 243/255)
-                        .cornerRadius(10)
-                        .frame(width: 30, height: 35)
-                        .offset(x: -85)
                 }
-                .offset(x: -30)
                 Button ("Done") {
+                    pickerSelectedDate = pickerSelectedDate.monthStart
                     isMonthYearPickerOpen = false
                 }
                 .padding(.bottom, 30)

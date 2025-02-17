@@ -169,6 +169,7 @@ struct DateGridView: View {
                             }
                         }
                         .frame(width: geometry.size.width)
+//                        .frame(width: UIScreen.main.bounds.width)
                         .id(date)
                         .onChange(of: calendarViewModel.selectedDate) {
                             selectedDate = calendarViewModel.selectedDate
@@ -176,7 +177,6 @@ struct DateGridView: View {
                         .onChange(of: calendarViewModel.helperDate) { _, newValue in
                             withAnimation {
                                 scrollViewPosition = newValue
-                                
                             }
                         }
                         .onChange(of: calendarViewModel.range) {
