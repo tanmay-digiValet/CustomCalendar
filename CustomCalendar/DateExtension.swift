@@ -8,7 +8,6 @@ import Foundation
 import DVFoundation
 
 extension Date {
-    //    static var firstDayOfWeek = Calendar.current.firstWeekday
     
     func createDate(year: Int, month: Int, day: Int) -> Date? {
         let formatter = DateFormatter()
@@ -17,14 +16,12 @@ extension Date {
         return formatter.date(from: "\(year)-\(month)-\(day)")
     }
     
-    //    // MARK: Gives last day of previous month, so we need nextDay to get the start of month
     var monthStart: Date {
         self.beginning(of: .month) ?? Date.now
     }
 
     var nextDay: Date { self.adding(.day, value: 1) }
 
-    // MARK: components.day is decreamented by 1 as adding entire month would return the first day of next month.
     var monthEnd: Date { self.end(of: .month) ?? Date.now }
 
     var numberOfDaysInMonth: Int? {

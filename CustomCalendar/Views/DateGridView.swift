@@ -13,13 +13,11 @@ struct DateGridView: View {
     @Binding var selectedDate: Date?
     @Binding var range: ClosedRange<Date>?
     @Binding var mode: Mode
-    @Binding var selectedDate1: Date?
-    @Binding var selectedDate2: Date?
     @Binding var scrollViewPosition: Date?
     
     @Binding var isMonthYearPickerOpen: Bool
     
-    private let cols = Array(repeating: GridItem(.flexible()), count: 7)
+    private let cols = Array(repeating: GridItem(.flexible(), spacing: 0), count: 7)
     private let calendar = Calendar.current
     private let daysOfWeek = Calendar.current.shortWeekdaySymbols.map { $0.uppercased() }
     
@@ -27,139 +25,177 @@ struct DateGridView: View {
     
     var body: some View {
         
-        ScrollView(.horizontal, showsIndicators: false) {
-            LazyHStack(alignment: .top) {
-                ForEach(generateDateArray(from: calendarViewModel.permissibleRange), id: \.self) { date in
-                    LazyVGrid(columns: cols, spacing: 20) {
-                        
-                        Group {
-                            ForEach(daysOfWeek, id: \.self) { day in
-                                Text(day)
-                                    .font(.caption)
-                                    .font(.system(size: 16))
-                                    .foregroundColor(.secondary)
-                                    .frame(width: 44)
-                                    .animation(nil, value: calendarViewModel.helperDate)
-                            }
+        GeometryReader { geometry in
+            ScrollView(.horizontal, showsIndicators: false) {
+                LazyHStack(alignment: .top) {
+                    ForEach(generateDateArray(from: calendarViewModel.permissibleRange), id: \.self) { date in
+                        LazyVGrid(columns: cols, spacing: UIConstants.dateGridSpacing) {
                             
-                            ForEach(1...7, id: \.self) { ind in
-                                if ind < date.monthStart.weekday {
-                                    Text(" ")
-                                        .frame(width: 44, height: 44)
-                                }
-                            }
-                            
-                            switch mode {
-                            case .single:
-                                ForEach(1...(date.numberOfDaysInMonth ?? 1), id: \.self) { curr in
-                                    let currDate = date.createDate(year: date.year, month: date.month, day: curr) ?? Date.now
-                                    Text("\(curr)")
-                                        .font(.system(size: 20))
-                                        .frame(width: 44, height: 44)
-                                        .background(calendarViewModel.isSelectedDate(currDate) ? .black : .white)
-                                        .foregroundStyle(calendarViewModel.isSelectedDate(currDate) ? .white : .black)
-                                        .opacity(calendarViewModel.isDateDisabled(currDate) ? 0.2 : 1)
-                                        .clipShape(Circle())
-                                    //                            .animation(.easeInOut(duration: 0.2), value: calendarViewModelObserver.selectedDate)
-                                        .onTapGesture {
-                                            calendarViewModel.singleModeTap(date: currDate)
-                                            isMonthYearPickerOpen = false
-                                        }
+                            Group {
+                                ForEach(daysOfWeek, id: \.self) { day in
+                                    Text(day)
+                                        .font(.caption)
+                                        .font(.system(size: UIConstants.dayFontSize))
+                                        .foregroundColor(.secondary)
+                                        .frame(maxWidth: .infinity)
+                                        .animation(nil, value: calendarViewModel.helperDate)
+                                        .padding(.vertical, UIConstants.cellVerticalPadding)
                                 }
                                 
-                            case .range:
-                                ForEach(1...(date.numberOfDaysInMonth ?? 1), id: \.self) { curr in
-                                    let currDate = Date.now.createDate(year: date.year, month: date.month, day: curr) ?? Date.now
-                                    let isDateDisabledVal = calendarViewModel.isDateDisabled(currDate)
-                                    let isSelectedForRange = calendarViewModel.isSelectedDateForRange(currDate)
-                                    let isNextDayDisabled = calendarViewModel.isDateDisabled(Calendar.current.date(byAdding: .day, value: 1, to: currDate) ?? Date.now)
-                                    let isPrevDayDisabled = calendarViewModel.isDateDisabled(Calendar.current.date(byAdding: .day, value: -1, to: currDate) ?? Date.now)
-                                    let isWithinRangeVal = calendarViewModel.isWithinRange(currDate) && !isDateDisabledVal
+                                ForEach(1...7, id: \.self) { ind in
+                                    if ind < date.monthStart.weekday {
+                                        Text(" ")
+                                            .frame(maxWidth: .infinity)
+                                    }
+                                }
+                                
+                                switch mode {
+                                case .single:
+                                    ForEach(1...(date.numberOfDaysInMonth ?? 1), id: \.self) { curr in
+                                        let currDate = date.createDate(year: date.year, month: date.month, day: curr) ?? Date.now
+                                        let isSelectedDate = calendarViewModel.isSelectedDate(currDate)
+                                        Text("\(curr)")
+                                            .font(.system(size: UIConstants.dateFontSize, weight: .medium))
+//                                            .frame(height: UIConstants.cellHeight)
+                                            .frame(maxWidth: .infinity)
+                                            .padding(.vertical, UIConstants.cellVerticalPadding)
+                                            .background(isSelectedDate ? .black : .white)
+                                            .foregroundStyle(isSelectedDate ? .white : .black)
+                                            .fontWeight(isSelectedDate ? .semibold : .regular)
+                                            .opacity(calendarViewModel.isDateDisabled(currDate) ? 0.2 : 1)
+                                            .clipShape(Circle())
+                                            .onTapGesture {
+                                                calendarViewModel.singleModeTap(date: currDate)
+                                                isMonthYearPickerOpen = false
+                                            }
+                                    }
                                     
-                                    Text("\(curr)")
-                                        .font(.system(size: 20))
-                                        .frame(width: 44, height: 44)
-                                        .background(isSelectedForRange ? .black : .white)
-                                        .foregroundStyle(isSelectedForRange ? .white : .black)
-                                        .opacity(isDateDisabledVal ? 0.2 : 1)
-                                        .clipShape(Circle())
-                                        .overlay {
-                                            if let selectedDate1 = calendarViewModel.selectedDate1, let selectedDate2 = calendarViewModel.selectedDate2 {
-                                                if isWithinRangeVal {
-                                                    if isPrevDayDisabled || isNextDayDisabled {
-                                                        Text("\(curr)")
-                                                            .font(.system(size: 20))
-                                                            .foregroundStyle(.black)
-                                                            .frame(width: 54, height: 44)
-                                                            .background(Color(red: 198/255, green: 197/255, blue: 196/255))
-                                                            .roundedCorner(15, corners:
-                                                                            (isPrevDayDisabled && isNextDayDisabled ? [.bottomLeft, .topLeft, .bottomRight, .topRight] :
-                                                                                (isNextDayDisabled ? [.bottomRight, .topRight] :
-                                                                                    [.topLeft, .bottomLeft])
-                                                                            ))
-                                                    } else {
-                                                        Text("\(curr)")
-                                                            .font(.system(size: 20))
-                                                            .foregroundStyle(.black)
-                                                            .frame(width: 54, height: 44)
-                                                            .background(Color(red: 198/255, green: 197/255, blue: 196/255))
-                                                    }
-                                                } else if (currDate == selectedDate1 || currDate == selectedDate2) {
-                                                    Color(red: 198/255, green: 197/255, blue: 196/255)
-                                                        .frame(width: 34, height: 44)
-                                                        .offset(x: (currDate == selectedDate1 ? 10 : -10))
-                                                        .overlay {
+                                case .range:
+                                    ForEach(1...(date.numberOfDaysInMonth ?? 1), id: \.self) { curr in
+                                        let currDate = Date.now.createDate(year: date.year, month: date.month, day: curr) ?? Date.now
+                                        let isDateDisabledVal = calendarViewModel.isDateDisabled(currDate)
+                                        let isSelectedForRange = calendarViewModel.isSelectedDateForRange(currDate)
+                                        let isNextDayDisabled = calendarViewModel.isDateDisabled(Calendar.current.date(byAdding: .day, value: 1, to: currDate) ?? Date.now)
+                                        let isPrevDayDisabled = calendarViewModel.isDateDisabled(Calendar.current.date(byAdding: .day, value: -1, to: currDate) ?? Date.now)
+                                        let isWithinRangeVal = calendarViewModel.isWithinRange(currDate) && !isDateDisabledVal
+                                        
+                                        Text("\(curr)")
+                                            .font(.system(size: UIConstants.dateFontSize))
+//                                            .frame(height: UIConstants.cellHeight)
+                                            .frame(maxWidth: .infinity)
+                                            .padding(.vertical, UIConstants.cellVerticalPadding)
+                                            .background(isSelectedForRange ? .black : .white)
+                                            .foregroundStyle(isSelectedForRange ? .white : .black)
+                                            .fontWeight(isSelectedForRange ? .semibold : .regular)
+                                            .opacity(isDateDisabledVal ? 0.2 : 1)
+                                            .clipShape(Circle())
+                                            .overlay {
+                                                if let selectedDate1 = calendarViewModel.selectedDate1, let selectedDate2 = calendarViewModel.selectedDate2 {
+                                                    if isWithinRangeVal {
+                                                        if isPrevDayDisabled || isNextDayDisabled {
                                                             Text("\(curr)")
-                                                                .font(.system(size: 20))
-                                                                .frame(width: 44, height: 44)
-                                                                .background(.black)
-                                                                .foregroundStyle(.white)
-                                                                .clipShape(Circle())
-                                                                .onTapGesture {
-                                                                    calendarViewModel.rangeModeTap(date: currDate)
-                                                                }
+                                                                .font(.system(size: UIConstants.dateFontSize, weight: .regular))
+                                                                .foregroundStyle(.black)
+//                                                                .frame(height: UIConstants.cellHeight)
+                                                                .frame(maxWidth: .infinity)
+                                                                .padding(.vertical, UIConstants.cellVerticalPadding)
+                                                                .background(UIConstants.rangeSelectBgColor)
+                                                                .roundedCorner(15, corners:
+                                                                                (isPrevDayDisabled && isNextDayDisabled ? [.bottomLeft, .topLeft, .bottomRight, .topRight] :
+                                                                                    (isNextDayDisabled ? [.bottomRight, .topRight] :
+                                                                                        [.topLeft, .bottomLeft])
+                                                                                ))
+                                                                
+                                                        } else {
+                                                            Text("\(curr)")
+                                                                .font(.system(size: UIConstants.dateFontSize))
+                                                                .foregroundStyle(.black)
+//                                                                .frame(height: UIConstants.cellHeight)
+                                                                .frame(maxWidth: .infinity)
+                                                                .padding(.vertical, UIConstants.cellVerticalPadding)
+                                                                .background(UIConstants.rangeSelectBgColor)
                                                         }
+                                                    } else if (currDate == selectedDate1 || currDate == selectedDate2) {
+                                                        
+                                                        Text("\(curr)")
+//                                                            .frame(height: UIConstants.cellHeight)
+                                                            .frame(maxWidth: .infinity)
+                                                            .padding(.vertical, UIConstants.cellVerticalPadding)
+                                                            .background(UIConstants.rangeSelectBgColor)
+                                                            .overlay {
+                                                                ZStack {
+                                                                    HStack{
+                                                                        if currDate == selectedDate1 {
+                                                                            Color.white
+                                                                                .frame(maxWidth: .infinity)
+                                                                            if !isNextDayDisabled {
+                                                                                UIConstants.rangeSelectBgColor
+                                                                                    .frame(maxWidth: .infinity)
+                                                                            }
+                                                                        } else {
+                                                                            if !isPrevDayDisabled {
+                                                                                UIConstants.rangeSelectBgColor
+                                                                                    .frame(maxWidth: .infinity)
+                                                                            }
+                                                                            Color.white
+                                                                                .frame(maxWidth: .infinity)
+                                                                        }
+                                                                        
+                                                                    }
+                                                                    Text("\(curr)")
+                                                                        .font(.system(size: UIConstants.dateFontSize, weight: .semibold))
+//                                                                        .frame(width: UIConstants.selectedCircleWidth, height: UIConstants.selectedCircleWidth)
+                                                                        .frame(width: UIConstants.selectedCircleWidth)
+                                                                        .padding(.vertical, UIConstants.cellVerticalPadding)
+                                                                        .background(.black)
+                                                                        .foregroundStyle(.white)
+                                                                        .clipShape(Circle())
+                                                                        .onTapGesture {
+                                                                            calendarViewModel.rangeModeTap(date: currDate)
+                                                                        }
+                                                                }
+                                                            }
+                                                    }
                                                 }
                                             }
-                                        }
-                                        .animation(.easeInOut(duration: 0.2), value: calendarViewModel.selectedDate)
-                                    
-                                        .onTapGesture {
-                                            calendarViewModel.rangeModeTap(date: currDate)
-                                            isMonthYearPickerOpen = false
-                                        }
+                                            .animation(.easeInOut(duration: 0.2), value: calendarViewModel.selectedDate)
+                                        
+                                            .onTapGesture {
+                                                calendarViewModel.rangeModeTap(date: currDate)
+                                                isMonthYearPickerOpen = false
+                                            }
+                                    }
                                 }
                             }
                         }
-                    }
-                    .frame(maxWidth: .infinity)
-                    .id(date)
-                    .onChange(of: calendarViewModel.selectedDate) {
-                        selectedDate = calendarViewModel.selectedDate
-                    }
-                    .onChange(of: calendarViewModel.helperDate) { _, newValue in
-                        withAnimation {
-                            scrollViewPosition = newValue
-                            
+                        .frame(width: geometry.size.width)
+                        .id(date)
+                        .onChange(of: calendarViewModel.selectedDate) {
+                            selectedDate = calendarViewModel.selectedDate
+                        }
+                        .onChange(of: calendarViewModel.helperDate) { _, newValue in
+                            withAnimation {
+                                scrollViewPosition = newValue
+                                
+                            }
+                        }
+                        .onChange(of: calendarViewModel.range) {
+                            range = calendarViewModel.range
                         }
                     }
-                    .onChange(of: calendarViewModel.range) {
-                        range = calendarViewModel.range
-                    }
+                }
+                .scrollTargetLayout()
+            }
+            .scrollTargetBehavior(.viewAligned)
+    //        .scrollTargetBehavior(.paging)
+            .scrollPosition(id: $scrollViewPosition, anchor: .center)
+            .onChange(of: scrollViewPosition) {
+                if let scrollViewPosition = scrollViewPosition {
+                    calendarViewModel.syncMonthYear(scrollViewPosition)
+                    print("***", calendarViewModel.helperDate.dateString())
                 }
             }
-            .scrollTargetLayout()
         }
-        .scrollTargetBehavior(.viewAligned)
-//        .scrollTargetBehavior(.paging)
-        .scrollPosition(id: $scrollViewPosition, anchor: .center)
-        .onChange(of: scrollViewPosition) {
-            if let scrollViewPosition = scrollViewPosition {
-                calendarViewModel.syncMonthYear(scrollViewPosition)
-                print("***", calendarViewModel.helperDate.dateString())
-            }
-        }
-        
     }
     
     func generateDateArray(from range: ClosedRange<Date>?) -> [Date] {

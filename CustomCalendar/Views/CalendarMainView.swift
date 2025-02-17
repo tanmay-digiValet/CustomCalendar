@@ -61,18 +61,18 @@ struct CalendarMainView: View {
                 HStack (spacing: 20) {
                     HStack(spacing: 5) {
                         Text("\(calendarViewModel.helperDate.formatted(.dateTime.month()))")
-                            .font(.system(size: 28))
+                            .font(.system(size: UIConstants.mothYearFontSize))
                             .animation(.easeInOut(duration: 0.2), value: calendarViewModel.helperDate.month)
                             .contentTransition(.numericText(value: Double(calendarViewModel.helperDate.month)))
                         
                         Text("\(calendarViewModel.helperDate.formatted(.dateTime.year()))")
-                            .font(.system(size: 28))
+                            .font(.system(size: UIConstants.mothYearFontSize))
                             .animation(.easeInOut(duration: 0.2), value: calendarViewModel.helperDate.year)
                             .contentTransition(.numericText(value: Double(calendarViewModel.helperDate.year)))
                         
                         
                         Image(systemName: "chevron.right")
-                            .font(.system(size: 20))
+                            .font(.system(size: UIConstants.chevronFontSize))
                             .foregroundStyle(.black)
                     }
                     .onTapGesture {
@@ -89,11 +89,12 @@ struct CalendarMainView: View {
                             }
                         } ) {
                         Image(systemName: "chevron.left")
-                            .font(.system(size: 24))
+                            .font(.system(size: UIConstants.mothYearFontSize))
                             .foregroundStyle(.black)
                     }
                         .opacity(calendarViewModel.isLeftChevron ? 1 : 0.25)
                         .disabled(!calendarViewModel.isLeftChevron)
+                        .padding(.trailing, 10)
                     
                     Button(
                         action: {
@@ -102,11 +103,12 @@ struct CalendarMainView: View {
                             }
                         }) {
                         Image(systemName: "chevron.right")
-                            .font(.system(size: 24))
+                            .font(.system(size: UIConstants.mothYearFontSize))
                             .foregroundStyle(.black)
                     }
                         .opacity(calendarViewModel.isRightChevron ? 1 : 0.25)
                         .disabled(!calendarViewModel.isRightChevron)
+
                     
                 }
                 .padding(.bottom, 21)
@@ -117,8 +119,6 @@ struct CalendarMainView: View {
                     selectedDate: $selectedDate,
                     range: $range,
                     mode: $mode,
-                    selectedDate1: $selectedDate1,
-                    selectedDate2: $selectedDate2,
                     scrollViewPosition: $scrollViewPosition,
                     isMonthYearPickerOpen: $isMonthYearPickerOpen,
                     calendarViewModel: calendarViewModel
@@ -144,6 +144,7 @@ struct CalendarMainView: View {
                 }
             }
             .padding(.horizontal, 16)
+            .padding(.top, 13)
             .disabled(isMonthYearPickerOpen)
             .opacity(isMonthYearPickerOpen ? 0.5 : 1)
             
@@ -206,6 +207,25 @@ enum Mode {
     case single
     case range
 }
+
+struct UIConstants {
+    static var cellHeight: CGFloat = 44
+    static var cellVerticalPadding: CGFloat = 8
+    static var dateFontSize: CGFloat = 20
+    static var dateGridSpacing: CGFloat = 16
+    static var dayFontSize: CGFloat = 16
+    static var selectedCircleWidth: CGFloat = 44
+    static var selectedCircleHeight: CGFloat = 44
+    static var mothYearFontSize: CGFloat = 22
+    static var chevronFontSize: CGFloat = 18
+    static var rangeSelectBgColor: Color = Color(red: 198/255, green: 197/255, blue: 196/255)
+}
+
+//enum UIConstants: CGFloat {
+//    case cellHeight = 44
+//    case fontSize = 20
+//    case dateGridSpacing = 20
+//}
 
 struct RoundedCorner: Shape {
     var radius: CGFloat = .infinity
