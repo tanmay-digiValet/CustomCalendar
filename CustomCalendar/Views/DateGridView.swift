@@ -26,7 +26,7 @@ struct DateGridView: View {
     
     var body: some View {
         
-        GeometryReader { geometry in
+//        GeometryReader { geometry in
             ScrollView(.horizontal, showsIndicators: false) {
                 LazyHStack(alignment: .top) {
                     ForEach(generateDateArray(from: calendarViewModel.permissibleRange), id: \.self) { date in
@@ -169,8 +169,9 @@ struct DateGridView: View {
                                 }
                             }
                         }
-                        .frame(width: geometry.size.width)
+//                        .frame(width: geometry.size.width)
 //                        .frame(width: UIScreen.main.bounds.width)
+                        .containerRelativeFrame(.horizontal)
                         .id(date)
                         .onChange(of: calendarViewModel.selectedDate) {
                             selectedDate = calendarViewModel.selectedDate
@@ -183,15 +184,14 @@ struct DateGridView: View {
                         .onChange(of: calendarViewModel.range) {
                             range = calendarViewModel.range
                         }
+                        
                     }
                 }
                 .scrollTargetLayout()
                 .onAppear {
                     if !hasScrolled {
-//                        DispatchQueue.main.async {
                             scrollViewPosition = Date.now.monthStart
                             hasScrolled = true
-//                        }
                     }
                 }
             }
@@ -204,7 +204,7 @@ struct DateGridView: View {
                     print("***", calendarViewModel.helperDate.dateString())
                 }
             }
-        }
+//        }
     }
     
     func generateDateArray(from range: ClosedRange<Date>?) -> [Date] {
