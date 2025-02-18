@@ -14,6 +14,7 @@ struct DateGridView: View {
     @Binding var range: ClosedRange<Date>?
     @Binding var mode: Mode
     @Binding var scrollViewPosition: Date?
+    @State private var hasScrolled = false
     
     @Binding var isMonthYearPickerOpen: Bool
     
@@ -185,6 +186,14 @@ struct DateGridView: View {
                     }
                 }
                 .scrollTargetLayout()
+                .onAppear {
+                    if !hasScrolled {
+//                        DispatchQueue.main.async {
+                            scrollViewPosition = Date.now.monthStart
+                            hasScrolled = true
+//                        }
+                    }
+                }
             }
             .scrollTargetBehavior(.viewAligned)
     //        .scrollTargetBehavior(.paging)

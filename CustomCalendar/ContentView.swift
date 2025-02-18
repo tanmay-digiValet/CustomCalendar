@@ -12,8 +12,8 @@ enum Weekday: Int, CaseIterable {
 }
 
 struct ContentView: View {
-    var permissibleRange: ClosedRange<Date>? =
-    (Calendar.current.date(from: DateComponents(year: 2025, month: 8, day: 28)) ?? Date.now)...(Calendar.current.date(from: DateComponents(year: 2035, month: 12, day: 28)) ?? Date.now)
+    var permissibleRange: ClosedRange<Date>? = nil
+//    (Calendar.current.date(from: DateComponents(year: 2025, month: 8, day: 28)) ?? Date.now)...(Calendar.current.date(from: DateComponents(year: 2035, month: 12, day: 28)) ?? Date.now)
     @State var range: ClosedRange<Date>? = nil
     @State var selectedDate: Date? = nil
     @State var selectedRange: ClosedRange<Date>? = nil

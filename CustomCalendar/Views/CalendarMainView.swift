@@ -128,6 +128,7 @@ struct CalendarMainView: View {
                 if permissibleRange == nil {
                     calendarViewModel.isLeftChevron = true
                     calendarViewModel.isRightChevron = true
+                    calendarViewModel.helperDate = Date.now.monthStart
                 } else {
                     calendarViewModel.helperDate = permissibleRange?.lowerBound.monthStart ?? Date.now.monthStart
                     let lastDate = permissibleRange?.upperBound ?? Date.now
