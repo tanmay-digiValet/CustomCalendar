@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		EC8285002D5CCCBA00BEE6E5 /* DVFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = EC8284FF2D5CCCBA00BEE6E5 /* DVFoundation */; };
+		EC9355BA2D684F90006111FE /* DVThemeKit in Frameworks */ = {isa = PBXBuildFile; productRef = EC9355B92D684F90006111FE /* DVThemeKit */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -33,9 +34,22 @@
 		EC567E8A2D55FF58008D7EA9 /* CustomCalendarUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CustomCalendarUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		EC83F0302D6C2EF700CF3144 /* Exceptions for "CustomCalendar" folder in "CustomCalendar" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = EC567E6F2D55FF57008D7EA9 /* CustomCalendar */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		EC567E722D55FF57008D7EA9 /* CustomCalendar */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				EC83F0302D6C2EF700CF3144 /* Exceptions for "CustomCalendar" folder in "CustomCalendar" target */,
+			);
 			path = CustomCalendar;
 			sourceTree = "<group>";
 		};
@@ -57,6 +71,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				EC8285002D5CCCBA00BEE6E5 /* DVFoundation in Frameworks */,
+				EC9355BA2D684F90006111FE /* DVThemeKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -83,6 +98,7 @@
 				EC567E722D55FF57008D7EA9 /* CustomCalendar */,
 				EC567E832D55FF58008D7EA9 /* CustomCalendarTests */,
 				EC567E8D2D55FF58008D7EA9 /* CustomCalendarUITests */,
+				EC9355B82D684F90006111FE /* Frameworks */,
 				EC567E712D55FF57008D7EA9 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -95,6 +111,13 @@
 				EC567E8A2D55FF58008D7EA9 /* CustomCalendarUITests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		EC9355B82D684F90006111FE /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -118,6 +141,7 @@
 			name = CustomCalendar;
 			packageProductDependencies = (
 				EC8284FF2D5CCCBA00BEE6E5 /* DVFoundation */,
+				EC9355B92D684F90006111FE /* DVThemeKit */,
 			);
 			productName = CustomCalendar;
 			productReference = EC567E702D55FF57008D7EA9 /* CustomCalendar.app */;
@@ -203,6 +227,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				EC8284FE2D5CCCBA00BEE6E5 /* XCRemoteSwiftPackageReference "dvutility" */,
+				EC8FADE42D683A77005F44AD /* XCRemoteSwiftPackageReference "dvthemekit" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = EC567E712D55FF57008D7EA9 /* Products */;
@@ -407,6 +432,7 @@
 				DEVELOPMENT_ASSET_PATHS = "\"CustomCalendar/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = CustomCalendar/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -436,6 +462,7 @@
 				DEVELOPMENT_ASSET_PATHS = "\"CustomCalendar/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = CustomCalendar/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -573,6 +600,14 @@
 				minimumVersion = 1.1.6;
 			};
 		};
+		EC8FADE42D683A77005F44AD /* XCRemoteSwiftPackageReference "dvthemekit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://dvgit.digivalet.com/scm/ip/dvthemekit.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -580,6 +615,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = EC8284FE2D5CCCBA00BEE6E5 /* XCRemoteSwiftPackageReference "dvutility" */;
 			productName = DVFoundation;
+		};
+		EC9355B92D684F90006111FE /* DVThemeKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = EC8FADE42D683A77005F44AD /* XCRemoteSwiftPackageReference "dvthemekit" */;
+			productName = DVThemeKit;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

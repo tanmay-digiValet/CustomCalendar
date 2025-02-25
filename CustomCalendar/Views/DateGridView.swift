@@ -7,6 +7,7 @@
 
 import SwiftUI
 import DVFoundation
+import DVThemeKit
 
 struct DateGridView: View {
     
@@ -16,7 +17,7 @@ struct DateGridView: View {
     @Binding var scrollViewPosition: Date?
     @State private var hasScrolled = false
     
-    @Binding var isMonthYearPickerOpen: Bool
+//    @Binding var isMonthYearPickerOpen: Bool
     
     private let cols = Array(repeating: GridItem(.flexible(), spacing: 0), count: 7)
     private let calendar = Calendar.current
@@ -26,21 +27,18 @@ struct DateGridView: View {
     
     var body: some View {
         
-//        GeometryReader { geometry in
             ScrollView(.horizontal, showsIndicators: false) {
                 LazyHStack(alignment: .top) {
                     ForEach(generateDateArray(from: calendarViewModel.permissibleRange), id: \.self) { date in
                         LazyVGrid(columns: cols, spacing: UIConstants.dateGridSpacing) {
-                            
                             Group {
                                 ForEach(daysOfWeek, id: \.self) { day in
                                     Text(day)
-                                        .font(.caption)
-                                        .font(.system(size: UIConstants.dayFontSize))
+                                        .fontStyle(.captionCaption1Caps)
                                         .foregroundColor(.secondary)
                                         .frame(maxWidth: .infinity)
+                                        .frame(height: 28)
                                         .animation(nil, value: calendarViewModel.helperDate)
-                                        .padding(.vertical, UIConstants.cellVerticalPadding)
                                 }
                                 
                                 ForEach(1...7, id: \.self) { ind in
@@ -55,19 +53,23 @@ struct DateGridView: View {
                                     ForEach(1...(date.numberOfDaysInMonth ?? 1), id: \.self) { curr in
                                         let currDate = date.createDate(year: date.year, month: date.month, day: curr) ?? Date.now
                                         let isSelectedDate = calendarViewModel.isSelectedDate(currDate)
+                                        let isCurrDateToday = currDate.beginning(of: .day) == Date.now.beginning(of: .day)
+                                        let selectedDateCol = isSelectedDate ? UIConstants.selectedDateCol
+                                        : UIConstants.defaultDateCol
+//                                        let selectedDateCol = isSelectedDate ? Color(red: 245/255, green: 241/255, blue: 233/255)
+//                                        : UIConstants.defaultDateCol
+                                        
                                         Text("\(curr)")
-                                            .font(.system(size: UIConstants.dateFontSize, weight: .medium))
-//                                            .frame(height: UIConstants.cellHeight)
+                                            .fontStyle((isCurrDateToday || isSelectedDate) ? .headlineH4Medium : .headlineH4)
                                             .frame(maxWidth: .infinity)
-                                            .padding(.vertical, UIConstants.cellVerticalPadding)
-                                            .background(isSelectedDate ? .black : .white)
-                                            .foregroundStyle(isSelectedDate ? .white : .black)
-                                            .fontWeight(isSelectedDate ? .semibold : .regular)
+                                            .frame(height: UIConstants.cellHeight)
+                                            .background(isSelectedDate ? UIConstants.selectedCellBgCol : UIConstants.bgCol)
+                                            .foregroundStyle(isCurrDateToday ? UIConstants.todayDateCol : selectedDateCol)
                                             .opacity(calendarViewModel.isDateDisabled(currDate) ? 0.2 : 1)
                                             .clipShape(Circle())
                                             .onTapGesture {
                                                 calendarViewModel.singleModeTap(date: currDate)
-                                                isMonthYearPickerOpen = false
+//                                                isMonthYearPickerOpen = false
                                             }
                                     }
                                     
@@ -79,15 +81,15 @@ struct DateGridView: View {
                                         let isNextDayDisabled = calendarViewModel.isDateDisabled(Calendar.current.date(byAdding: .day, value: 1, to: currDate) ?? Date.now)
                                         let isPrevDayDisabled = calendarViewModel.isDateDisabled(Calendar.current.date(byAdding: .day, value: -1, to: currDate) ?? Date.now)
                                         let isWithinRangeVal = calendarViewModel.isWithinRange(currDate) && !isDateDisabledVal
+                                        let isCurrDateToday = currDate.beginning(of: .day) == Date.now.beginning(of: .day)
+                                        let selectedDateCol = isSelectedForRange ? UIConstants.selectedDateCol : UIConstants.defaultDateCol
                                         
                                         Text("\(curr)")
-                                            .font(.system(size: UIConstants.dateFontSize))
-//                                            .frame(height: UIConstants.cellHeight)
+                                            .fontStyle(isCurrDateToday || isSelectedForRange ? .headlineH4Medium : .headlineH4)
                                             .frame(maxWidth: .infinity)
-                                            .padding(.vertical, UIConstants.cellVerticalPadding)
-                                            .background(isSelectedForRange ? .black : .white)
-                                            .foregroundStyle(isSelectedForRange ? .white : .black)
-                                            .fontWeight(isSelectedForRange ? .semibold : .regular)
+                                            .frame(height: UIConstants.cellHeight)
+                                            .background(isSelectedForRange ? UIConstants.selectedCellBgCol : UIConstants.bgCol)
+                                            .foregroundStyle(isCurrDateToday ? UIConstants.todayDateCol : selectedDateCol)
                                             .opacity(isDateDisabledVal ? 0.2 : 1)
                                             .clipShape(Circle())
                                             .overlay {
@@ -95,82 +97,69 @@ struct DateGridView: View {
                                                     if isWithinRangeVal {
                                                         if isPrevDayDisabled || isNextDayDisabled {
                                                             Text("\(curr)")
-                                                                .font(.system(size: UIConstants.dateFontSize, weight: .regular))
-                                                                .foregroundStyle(.black)
-//                                                                .frame(height: UIConstants.cellHeight)
+                                                                .fontStyle(isCurrDateToday || isSelectedForRange ? .headlineH4Medium : .headlineH4)
+                                                                .foregroundStyle(isCurrDateToday ? UIConstants.todayDateCol : selectedDateCol)
                                                                 .frame(maxWidth: .infinity)
-                                                                .padding(.vertical, UIConstants.cellVerticalPadding)
+                                                                .frame(height: UIConstants.cellHeight)
                                                                 .background(UIConstants.rangeSelectBgColor)
-                                                                .roundedCorner(15, corners:
+                                                                .roundedCorner(22, corners:
                                                                                 (isPrevDayDisabled && isNextDayDisabled ? [.bottomLeft, .topLeft, .bottomRight, .topRight] :
                                                                                     (isNextDayDisabled ? [.bottomRight, .topRight] :
                                                                                         [.topLeft, .bottomLeft])
                                                                                 ))
-                                                                
                                                         } else {
                                                             Text("\(curr)")
-                                                                .font(.system(size: UIConstants.dateFontSize))
-                                                                .foregroundStyle(.black)
-//                                                                .frame(height: UIConstants.cellHeight)
+                                                                .fontStyle(isCurrDateToday ? .headlineH4Medium : .headlineH4)
+                                                                .foregroundStyle(isCurrDateToday ? UIConstants.todayDateCol : selectedDateCol)
                                                                 .frame(maxWidth: .infinity)
-                                                                .padding(.vertical, UIConstants.cellVerticalPadding)
+                                                                .frame(height: UIConstants.cellHeight)
                                                                 .background(UIConstants.rangeSelectBgColor)
                                                         }
                                                     } else if (currDate == selectedDate1 || currDate == selectedDate2) {
-                                                        
-                                                        Text("\(curr)")
-//                                                            .frame(height: UIConstants.cellHeight)
-                                                            .frame(maxWidth: .infinity)
-                                                            .padding(.vertical, UIConstants.cellVerticalPadding)
-                                                            .background(UIConstants.rangeSelectBgColor)
-                                                            .overlay {
-                                                                ZStack {
-                                                                    HStack{
-                                                                        if currDate == selectedDate1 {
-                                                                            Color.white
-                                                                                .frame(maxWidth: .infinity)
-                                                                            if !isNextDayDisabled {
-                                                                                UIConstants.rangeSelectBgColor
-                                                                                    .frame(maxWidth: .infinity)
-                                                                            }
-                                                                        } else {
-                                                                            if !isPrevDayDisabled {
-                                                                                UIConstants.rangeSelectBgColor
-                                                                                    .frame(maxWidth: .infinity)
-                                                                            }
-                                                                            Color.white
-                                                                                .frame(maxWidth: .infinity)
-                                                                        }
-                                                                        
+                                                        ZStack {
+                                                            HStack{
+                                                                if currDate == selectedDate1 {
+                                                                    Color.colorBrandPrimary
+                                                                        .frame(maxWidth: .infinity)
+                                                                        .frame(height: UIConstants.cellHeight)
+                                                                    if !isNextDayDisabled {
+                                                                        UIConstants.rangeSelectBgColor
+                                                                            .frame(maxWidth: .infinity)
+                                                                            .frame(height: UIConstants.cellHeight)
                                                                     }
-                                                                    Text("\(curr)")
-                                                                        .font(.system(size: UIConstants.dateFontSize, weight: .semibold))
-//                                                                        .frame(width: UIConstants.selectedCircleWidth, height: UIConstants.selectedCircleWidth)
-                                                                        .frame(width: UIConstants.selectedCircleWidth)
-                                                                        .padding(.vertical, UIConstants.cellVerticalPadding)
-                                                                        .background(.black)
-                                                                        .foregroundStyle(.white)
-                                                                        .clipShape(Circle())
-                                                                        .onTapGesture {
-                                                                            calendarViewModel.rangeModeTap(date: currDate)
-                                                                        }
+                                                                } else {
+                                                                    if !isPrevDayDisabled {
+                                                                        UIConstants.rangeSelectBgColor
+                                                                            .frame(maxWidth: .infinity)
+                                                                            .frame(height: UIConstants.cellHeight)
+                                                                    }
+                                                                    Color.colorBrandPrimary
+                                                                        .frame(maxWidth: .infinity)
+                                                                        .frame(height: UIConstants.cellHeight)
                                                                 }
                                                             }
+                                                            Text("\(curr)")
+                                                                .fontStyle(.headlineH4Medium)
+                                                                .frame(width: 44, height: UIConstants.cellHeight)
+                                                                .background(UIConstants.selectedCellBgCol)
+                                                                .clipShape(Circle())
+                                                                .foregroundStyle(isCurrDateToday ? UIConstants.todayDateCol : selectedDateCol)
+                                                                .onTapGesture {
+                                                                    calendarViewModel.rangeModeTap(date: currDate)
+                                                                }
+                                                        }
                                                     }
                                                 }
                                             }
                                             .animation(.easeInOut(duration: 0.2), value: calendarViewModel.selectedDate)
-                                        
                                             .onTapGesture {
                                                 calendarViewModel.rangeModeTap(date: currDate)
-                                                isMonthYearPickerOpen = false
+//                                                isMonthYearPickerOpen = false
                                             }
                                     }
                                 }
                             }
                         }
-//                        .frame(width: geometry.size.width)
-//                        .frame(width: UIScreen.main.bounds.width)
                         .containerRelativeFrame(.horizontal)
                         .id(date)
                         .onChange(of: calendarViewModel.selectedDate) {
@@ -196,7 +185,6 @@ struct DateGridView: View {
                 }
             }
             .scrollTargetBehavior(.viewAligned)
-    //        .scrollTargetBehavior(.paging)
             .scrollPosition(id: $scrollViewPosition, anchor: .center)
             .onChange(of: scrollViewPosition) {
                 if let scrollViewPosition = scrollViewPosition {
@@ -204,7 +192,6 @@ struct DateGridView: View {
                     print("***", calendarViewModel.helperDate.dateString())
                 }
             }
-//        }
     }
     
     func generateDateArray(from range: ClosedRange<Date>?) -> [Date] {
@@ -232,7 +219,6 @@ struct DateGridView: View {
             currentDate = Calendar.current.date(byAdding: .month, value: 1, to: currentDate) ?? Date.now
             currentDate = currentDate.monthStart
         }
-
         return dates
     }
 }

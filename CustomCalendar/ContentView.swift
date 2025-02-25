@@ -16,7 +16,7 @@ struct ContentView: View {
 //    (Calendar.current.date(from: DateComponents(year: 2025, month: 8, day: 28)) ?? Date.now)...(Calendar.current.date(from: DateComponents(year: 2035, month: 12, day: 28)) ?? Date.now)
     @State var range: ClosedRange<Date>? = nil
     @State var selectedDate: Date? = nil
-    @State var selectedRange: ClosedRange<Date>? = nil
+//    @State var selectedRange: ClosedRange<Date>? = nil
 //    @State var mode: Mode = .single
     @State var mode: Mode = .range
     @State var monthSelector = false
@@ -28,7 +28,7 @@ struct ContentView: View {
     ]
     
     var body: some View {
-        VStack  {
+        VStack {
             CalendarMainView(
                 range: $range,
                 selectedDate: $selectedDate,
@@ -37,9 +37,6 @@ struct ContentView: View {
                 disabledDates: disabledDates,
                 mode: $mode
             )
-//            Button("Toggle mode") {
-//                mode = mode == .range ? .single : .range
-//            }
         }
         .onChange(of: range) { _, newValue in
             print("lowerBound: ",  newValue?.lowerBound.dateString() ?? "")

@@ -1,6 +1,15 @@
 {
-  "originHash" : "b057749ded86ca6ebc04258ec54ae5cf83b9f6e6e6fcc351493f3221817abde3",
+  "originHash" : "e1a775ee1115ba99cd9354c0cd24a5734f6671e98106ee2d6a2cab79a421bf18",
   "pins" : [
+    {
+      "identity" : "dvthemekit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://dvgit.digivalet.com/scm/ip/dvthemekit.git",
+      "state" : {
+        "revision" : "048be677225ce56f5081253dc33ed810d4de9b0b",
+        "version" : "1.0.0"
+      }
+    },
     {
       "identity" : "dvutility",
       "kind" : "remoteSourceControl",

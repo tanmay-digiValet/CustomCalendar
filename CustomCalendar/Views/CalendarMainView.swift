@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import DVThemeKit
 
 struct CalendarMainView: View {
     
@@ -13,7 +14,6 @@ struct CalendarMainView: View {
     var permissibleRange: ClosedRange<Date>? = nil
     @Binding var range: ClosedRange<Date>?
     @Binding var selectedDate: Date?
-    @State var selectedRange: ClosedRange<Date>? = nil
     var disabledDays: [Weekday] = []
     var disabledDates: [Date] = []
     @Binding var mode: Mode
@@ -26,6 +26,11 @@ struct CalendarMainView: View {
     @State var selectedDate2: Date? = nil
     @State var scrollViewPosition: Date? = nil
     @State var isMonthYearPickerOpen: Bool = false
+    
+    @State var selectedStartTime = Date()
+    @State var selectedEndTime = Date()
+    @State var isStartTimePickerOpen = false
+    @State var isEndTimePickerOpen = false
     
     @StateObject var calendarViewModel: CalendarViewModel
     
@@ -57,24 +62,29 @@ struct CalendarMainView: View {
         
     var body: some View {
         ZStack {
-            VStack (alignment: .leading) {
+            UIConstants.bgCol
+                .ignoresSafeArea()
+                
+            VStack {
                 HStack (spacing: 20) {
-                    HStack(spacing: 5) {
+                    HStack (spacing: 5) {
                         Text("\(calendarViewModel.helperDate.formatted(.dateTime.month()))")
-                            .font(.system(size: UIConstants.mothYearFontSize))
+                            .fontStyle(.headlineH4Medium)
                             .animation(.easeInOut(duration: 0.2), value: calendarViewModel.helperDate.month)
                             .contentTransition(.numericText(value: Double(calendarViewModel.helperDate.month)))
                         
                         Text("\(calendarViewModel.helperDate.formatted(.dateTime.year()))")
-                            .font(.system(size: UIConstants.mothYearFontSize))
+                            .fontStyle(.headlineH4Medium)
                             .animation(.easeInOut(duration: 0.2), value: calendarViewModel.helperDate.year)
                             .contentTransition(.numericText(value: Double(calendarViewModel.helperDate.year)))
                         
-                        
                         Image(systemName: "chevron.right")
                             .font(.system(size: UIConstants.chevronFontSize))
-                            .foregroundStyle(.black)
+                            .foregroundStyle(UIConstants.chevronCol)
+                            .frame(width: 24, height: 24)
+                            .padding(.leading, -5)
                     }
+                    .fontStyle(.headlineH4Medium)
                     .onTapGesture {
                         isMonthYearPickerOpen = true
                     }
@@ -82,47 +92,64 @@ struct CalendarMainView: View {
                     
                     Spacer()
                     
-                    Button(
-                        action: {
-                            withAnimation {
-                                calendarViewModel.lowerBoundCheck()
-                            }
-                        } ) {
-                        Image(systemName: "chevron.left")
-                            .font(.system(size: UIConstants.mothYearFontSize))
-                            .foregroundStyle(.black)
+                    HStack(spacing: 20) {
+                        Button(
+                            action: {
+                                withAnimation {
+                                    calendarViewModel.lowerBoundCheck()
+                                }
+                            } ) {
+                            Image(systemName: "chevron.left")
+                                .font(.system(size: UIConstants.chevronFontSize))
+                                .foregroundStyle(UIConstants.chevronCol)
+                        }
+                            .opacity(calendarViewModel.isLeftChevron ? 1 : 0.25)
+                            .frame(width: 24, height: 24)
+                            .disabled(!calendarViewModel.isLeftChevron)
+                        
+                        Button(
+                            action: {
+                                withAnimation {
+                                    calendarViewModel.upperBoundCheck()
+                                }
+                            }) {
+                            Image(systemName: "chevron.right")
+                                .font(.system(size: UIConstants.chevronFontSize))
+                                .foregroundStyle(UIConstants.chevronCol)
+                        }
+                            .opacity(calendarViewModel.isRightChevron ? 1 : 0.25)
+                            .frame(width: 24, height: 24)
+                            .disabled(!calendarViewModel.isRightChevron)
                     }
-                        .opacity(calendarViewModel.isLeftChevron ? 1 : 0.25)
-                        .disabled(!calendarViewModel.isLeftChevron)
-                        .padding(.trailing, 10)
-                    
-                    Button(
-                        action: {
-                            withAnimation {
-                                calendarViewModel.upperBoundCheck()
-                            }
-                        }) {
-                        Image(systemName: "chevron.right")
-                            .font(.system(size: UIConstants.mothYearFontSize))
-                            .foregroundStyle(.black)
-                    }
-                        .opacity(calendarViewModel.isRightChevron ? 1 : 0.25)
-                        .disabled(!calendarViewModel.isRightChevron)
-
-                    
                 }
-                .padding(.bottom, 21)
-                .padding(.horizontal, 10)
-                .padding(.trailing, 10)
+                .frame(height: 56)
+                .padding(.horizontal, .rowPadding)
                 
                 DateGridView(
                     selectedDate: $selectedDate,
                     range: $range,
                     mode: $mode,
                     scrollViewPosition: $scrollViewPosition,
-                    isMonthYearPickerOpen: $isMonthYearPickerOpen,
+//                    isMonthYearPickerOpen: $isMonthYearPickerOpen,
                     calendarViewModel: calendarViewModel
                 )
+                .padding(.horizontal, .rowDateCalendar)
+                
+                TimeSelectView(selectedStartTime: $selectedStartTime, selectedEndTime: $selectedEndTime, isStartTimePickerOpen: $isStartTimePickerOpen, isEndTimePickerOpen: $isEndTimePickerOpen)
+                
+                Spacer()
+                
+                Button("Toggle Mode") {
+                    if mode == .range {
+                        calendarViewModel.selectedDate1 = nil
+                        calendarViewModel.selectedDate2 = nil
+                        calendarViewModel.range = nil
+                        mode = .single
+                    } else {
+                        calendarViewModel.selectedDate = nil
+                        mode = .range
+                    }
+                }
             }
             .onAppear {
                 if permissibleRange == nil {
@@ -144,54 +171,26 @@ struct CalendarMainView: View {
                     calendarViewModel.chevronCheck()
                 }
             }
-            .padding(.horizontal, 16)
-            .padding(.top, 13)
-            .disabled(isMonthYearPickerOpen)
-            .opacity(isMonthYearPickerOpen ? 0.5 : 1)
+            .disabled(isMonthYearPickerOpen || isStartTimePickerOpen || isEndTimePickerOpen)
+//            .disabled(isMonthYearPickerOpen)
+            .opacity(isMonthYearPickerOpen || isStartTimePickerOpen || isEndTimePickerOpen ? 0.3 : 1)
+//            .opacity(isMonthYearPickerOpen ? 0.5 : 1)
+            
+            if isStartTimePickerOpen || isEndTimePickerOpen {
+                TimeSelectorView(selectedStartTime: $selectedStartTime, selectedEndTime: $selectedEndTime, isStartTimePickerOpen: $isStartTimePickerOpen, isEndTimePickerOpen: $isEndTimePickerOpen)
+                    .shadow(radius: 10)
+            }
             
             if isMonthYearPickerOpen {
-                withAnimation {
-                    MonthYearPickerView(
-                        pickerSelectedDate: $calendarViewModel.helperDate,
-                        isMonthYearPickerOpen: $isMonthYearPickerOpen,
-                        validRange: calendarViewModel.permissibleRange
-                    )
-                        .shadow(radius: 10)
-                }
-                    
+                MonthYearPickerView (          
+                    pickerSelectedDate: $calendarViewModel.helperDate,
+                    isMonthYearPickerOpen: $isMonthYearPickerOpen,
+                    validRange: calendarViewModel.permissibleRange,
+                    calendarViewModel: calendarViewModel
+                )
+                .shadow(radius: 10)
             }
         }
-    }
-}
-
-struct MonthYearPickerView: View {
-    
-    @Binding var pickerSelectedDate: Date
-    @Binding var isMonthYearPickerOpen: Bool
-    var validRange: ClosedRange<Date>?
-    
-    var body: some View {
-            VStack {
-                ZStack {
-                    DatePicker(
-                        "Select Month & Year",
-                        selection: $pickerSelectedDate,
-                        in:
-                            (validRange?.lowerBound.monthStart ?? Date.now)...(validRange?.upperBound ?? Date.now),
-                        displayedComponents: [.date]
-                    )
-                        .datePickerStyle(.wheel)
-                        .labelsHidden()
-                }
-                Button ("Done") {
-                    pickerSelectedDate = pickerSelectedDate.monthStart
-                    isMonthYearPickerOpen = false
-                }
-                .padding(.bottom, 30)
-            }
-            .frame(width: 350, height: 250)
-            .background(.white)
-            .cornerRadius(20)
     }
 }
 
@@ -199,25 +198,6 @@ enum Mode {
     case single
     case range
 }
-
-struct UIConstants {
-    static var cellHeight: CGFloat = 44
-    static var cellVerticalPadding: CGFloat = 8
-    static var dateFontSize: CGFloat = 20
-    static var dateGridSpacing: CGFloat = 16
-    static var dayFontSize: CGFloat = 16
-    static var selectedCircleWidth: CGFloat = 44
-    static var selectedCircleHeight: CGFloat = 44
-    static var mothYearFontSize: CGFloat = 22
-    static var chevronFontSize: CGFloat = 18
-    static var rangeSelectBgColor: Color = Color(red: 198/255, green: 197/255, blue: 196/255)
-}
-
-//enum UIConstants: CGFloat {
-//    case cellHeight = 44
-//    case fontSize = 20
-//    case dateGridSpacing = 20
-//}
 
 struct RoundedCorner: Shape {
     var radius: CGFloat = .infinity

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>UIAppFonts</key>
+	<array>
+		<string>BarlowCondensed-Black.ttf</string>
+		<string>BarlowCondensed-Medium.ttf</string>
+		<string>BarlowCondensed-BlackItalic.ttf</string>
+		<string>BarlowCondensed-Bold.ttf</string>
+		<string>BarlowCondensed-BoldItalic.ttf</string>
+		<string>BarlowCondensed-ExtraBold.ttf</string>
+		<string>BarlowCondensed-ExtraBoldItalic.ttf</string>
+		<string>BarlowCondensed-MediumItalic.ttf</string>
+		<string>BarlowCondensed-ExtraLight.ttf</string>
+		<string>BarlowCondensed-ExtraLightItalic.ttf</string>
+		<string>BarlowCondensed-Italic.ttf</string>
+		<string>BarlowCondensed-Light.ttf</string>
+		<string>BarlowCondensed-LightItalic.ttf</string>
+		<string>BarlowCondensed-SemiBold.ttf</string>
+		<string>BarlowCondensed-SemiBoldItalic.ttf</string>
+		<string>BarlowCondensed-Thin.ttf</string>
+		<string>BarlowCondensed-ThinItalic.ttf</string>
+		<string>BarlowCondensed-Regular.ttf</string>
+        <string>ppneuemontreal-thin.otf</string>
+        <string>ppneuemontreal-bold.otf</string>
+        <string>ppneuemontreal-medium.otf</string>
+        <string>ppneuemontreal-book.otf</string>
+        <string>ppneuemontreal-semibolditalic.otf</string>
+        <string>ppneuemontreal-italic.otf</string>
+		<string>Font Awesome 6 Pro-Thin-100.otf</string>
+		<string>Font Awesome 6 Brands-Regular-400.otf</string>
+		<string>Font Awesome 6 Pro-Light-300.otf</string>
+		<string>Font Awesome 6 Duotone-Solid-900.otf</string>
+		<string>Font Awesome 6 Pro-Solid-900.otf</string>
+		<string>Font Awesome 6 Pro-Regular-400.otf</string>
+	</array>
+</dict>
+</plist>
