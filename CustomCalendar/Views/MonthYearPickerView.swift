@@ -29,9 +29,9 @@ struct MonthYearPickerView: View {
                 DatePicker (
                     "Select Month & Year",
                     selection: Binding(
-                        get: { $pickerSelectedDate.wrappedValue },  // Get the current value
+                        get: { $pickerSelectedDate.wrappedValue },
                         set: { newValue in
-                            $pickerSelectedDate.wrappedValue = newValue.monthStart // Modify before setting
+                            $pickerSelectedDate.wrappedValue = newValue.monthStart
                         }
                     ),
                     in:

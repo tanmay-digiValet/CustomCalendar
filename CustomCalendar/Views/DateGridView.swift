@@ -17,8 +17,6 @@ struct DateGridView: View {
     @Binding var scrollViewPosition: Date?
     @State private var hasScrolled = false
     
-//    @Binding var isMonthYearPickerOpen: Bool
-    
     private let cols = Array(repeating: GridItem(.flexible(), spacing: 0), count: 7)
     private let calendar = Calendar.current
     private let daysOfWeek = Calendar.current.shortWeekdaySymbols.map { $0.uppercased() }
@@ -56,8 +54,6 @@ struct DateGridView: View {
                                         let isCurrDateToday = currDate.beginning(of: .day) == Date.now.beginning(of: .day)
                                         let selectedDateCol = isSelectedDate ? UIConstants.selectedDateCol
                                         : UIConstants.defaultDateCol
-//                                        let selectedDateCol = isSelectedDate ? Color(red: 245/255, green: 241/255, blue: 233/255)
-//                                        : UIConstants.defaultDateCol
                                         
                                         Text("\(curr)")
                                             .fontStyle((isCurrDateToday || isSelectedDate) ? .headlineH4Medium : .headlineH4)
@@ -69,7 +65,6 @@ struct DateGridView: View {
                                             .clipShape(Circle())
                                             .onTapGesture {
                                                 calendarViewModel.singleModeTap(date: currDate)
-//                                                isMonthYearPickerOpen = false
                                             }
                                     }
                                     
@@ -154,7 +149,6 @@ struct DateGridView: View {
                                             .animation(.easeInOut(duration: 0.2), value: calendarViewModel.selectedDate)
                                             .onTapGesture {
                                                 calendarViewModel.rangeModeTap(date: currDate)
-//                                                isMonthYearPickerOpen = false
                                             }
                                     }
                                 }
@@ -173,7 +167,6 @@ struct DateGridView: View {
                         .onChange(of: calendarViewModel.range) {
                             range = calendarViewModel.range
                         }
-                        
                     }
                 }
                 .scrollTargetLayout()
@@ -211,8 +204,8 @@ struct DateGridView: View {
             return dates
         }
         
-        var currentDate = range.lowerBound
-        currentDate = currentDate.monthStart
+        var currentDate = range.lowerBound.monthStart
+//        currentDate = currentDate.monthStart
         
         while currentDate <= range.upperBound {
             dates.append(currentDate)

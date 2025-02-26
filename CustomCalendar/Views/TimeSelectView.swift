@@ -7,56 +7,72 @@
 import SwiftUI
 import DVThemeKit
 
-struct TimeSelectView: View {
-    @Binding var selectedStartTime: Date
-    @Binding var selectedEndTime: Date
-    @Binding var isStartTimePickerOpen: Bool
-    @Binding var isEndTimePickerOpen: Bool
-    
-    var body: some View {
-        VStack (spacing: 0) {
-            Divider()
-            TimeSelectListItem(label: "Start Time", selectedTime: $selectedStartTime, isPickerOpen: $isStartTimePickerOpen)
-            Divider()
-            TimeSelectListItem(label: "End time", selectedTime: $selectedEndTime, isPickerOpen: $isEndTimePickerOpen)
+extension CalendarMainView {
+    @ViewBuilder func timeSelectView() -> some View {
+        VStack {
+            VStack (spacing: 0) {
+                Divider()
+                timeSelectListItem(label: TimeSelectListLabel.startTime.rawValue, selectedTime: $startTime)
+                Divider()
+                timeSelectListItem(label: TimeSelectListLabel.endTime.rawValue, selectedTime: $endTime)
+            }
+            .background(UIConstants.bgCol)
+            .onChange(of: startTime) {
+                if startTime > endTime {
+                    endTime = startTime
+                }
+            }
+            .onChange(of: endTime) {
+                if endTime < startTime {
+                    startTime = endTime
+                }
+            }
+            
+            if isStartTimePickerOpen || isEndTimePickerOpen {
+                ZStack {
+                    Color.clear
+                        .contentShape(Rectangle())
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .onTapGesture {
+                            isStartTimePickerOpen = false
+                            isEndTimePickerOpen = false
+                        }
+                        .ignoresSafeArea()
+                    
+                    DatePicker(
+                        "Select Time",
+                        selection: isStartTimePickerOpen ? $startTime : $endTime,
+                        displayedComponents: .hourAndMinute
+                    )
+                            .datePickerStyle(.wheel)
+                            .labelsHidden()
+                            .frame(maxHeight: .infinity, alignment: .top)
+                }
+            }
         }
-        .background(UIConstants.bgCol)
-        .opacity(isStartTimePickerOpen || isEndTimePickerOpen ? 0.5 : 1)
         .frame(maxHeight: .infinity, alignment: .top)
-        .onChange(of: selectedStartTime) {
-            if selectedStartTime > selectedEndTime {
-                selectedEndTime = selectedStartTime
-            }
-        }
-        .onChange(of: selectedEndTime) {
-            if selectedEndTime < selectedStartTime {
-                selectedStartTime = selectedEndTime
-            }
-        }
     }
 }
 
-struct TimeSelectListItem: View {
-    var label: String
-    @Binding var selectedTime: Date
-    @Binding var isPickerOpen: Bool
+extension CalendarMainView {
     
-    var selectedHour: Int {
-        Calendar.current.component(.hour, from: selectedTime)
-    }
-    var selectedMin: Int {
-        Calendar.current.component(.minute, from: selectedTime)
-    }
-    
-    var MeridiemIndicator: String {
-        if selectedHour < 12 {
-            "AM"
-        } else {
-            "PM"
+    func timeSelectListItem(label: String, selectedTime: Binding<Date>) -> some View {
+        var selectedHour: Int {
+            Calendar.current.component(.hour, from: selectedTime.wrappedValue)
         }
-    }
-    
-    var body: some View {
+        var selectedMin: Int {
+            Calendar.current.component(.minute, from: selectedTime.wrappedValue)
+        }
+        
+        var Meridiem: String {
+            if selectedHour < 12 {
+                "AM"
+            } else {
+                "PM"
+            }
+        }
+        
+        return (
             HStack (spacing: 0) {
                 Image("timeIcon")
                     .resizable()
@@ -72,13 +88,23 @@ struct TimeSelectListItem: View {
                         .frame(width: 99, height: 32)
                         .applyStrokes(.effectStrokeOutline, strokeShape: Rectangle())
                     
-                    Text(" \(selectedHourFormatter(selectedHour)) : \(selectedMinFormatter(selectedMin)) \(MeridiemIndicator) ")
+                    Text(" \(selectedHourFormatter(selectedHour)) : \(selectedMinFormatter(selectedMin)) \(Meridiem) ")
                         .frame(height: 56)
                         .fontStyle(.subtitleRegular)
                 }
             }
             .onTapGesture {
-                isPickerOpen = true
+                if isEndTimePickerOpen {
+                    isEndTimePickerOpen.toggle()
+                } else if isStartTimePickerOpen {
+                    isStartTimePickerOpen.toggle()
+                }
+                
+                if label == TimeSelectListLabel.startTime.rawValue {
+                    isStartTimePickerOpen = true
+                } else {
+                    isEndTimePickerOpen = true
+                }
             }
             .padding(.leading, .rowPadding)
             .padding(.trailing, .rowSwitchChevQty)
@@ -90,6 +116,7 @@ struct TimeSelectListItem: View {
 //                    .colorMultiply(.clear)
 //                    .offset(x: -10)
             }
+        )
     }
     
     func selectedHourFormatter(_ selectedHour: Int) -> String {
@@ -113,17 +140,13 @@ struct TimeSelectListItem: View {
     }
 }
 
-struct TimeSelectorView: View {
-    @Binding var selectedStartTime: Date
-    @Binding var selectedEndTime: Date
-    @Binding var isStartTimePickerOpen: Bool
-    @Binding var isEndTimePickerOpen: Bool
-    
-    var body: some View {
+
+extension CalendarMainView {
+    func timeSelectorView() -> some View {
         ZStack {
             Color.clear
                 .contentShape(Rectangle())
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .containerRelativeFrame([.horizontal, .vertical])
                 .onTapGesture {
                     isStartTimePickerOpen = false
                     isEndTimePickerOpen = false
@@ -132,21 +155,20 @@ struct TimeSelectorView: View {
             
             VStack {
                 DatePicker(
-                    "Select Month & Year",
-                    selection: isStartTimePickerOpen ? $selectedStartTime : $selectedEndTime,
+                    "Select Time",
+                    selection: isStartTimePickerOpen ? $startTime : $endTime,
                     displayedComponents: .hourAndMinute
                 )
                         .datePickerStyle(.wheel)
+                        .scaleEffect(0.9)
                         .labelsHidden()
             }
-            .frame(width: 330, height: 230)
             .background(UIConstants.bgCol)
-            .cornerRadius(20)
         }
     }
 }
 
-
-//#Preview {
-//    TimeSelectView()
-//}
+enum TimeSelectListLabel: String {
+    case startTime = "Start Time"
+    case endTime = "End Time"
+}

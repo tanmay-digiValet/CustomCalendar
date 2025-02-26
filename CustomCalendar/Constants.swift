@@ -31,11 +31,7 @@ struct Constants {
 
 struct UIConstants {
     static var cellHeight: CGFloat = 44
-//    static var cellVerticalPadding: CGFloat = 8
-//    static var dateFontSize: CGFloat = 20
     static var dateGridSpacing: CGFloat = 8
-//    static var selectedCircleWidth: CGFloat = 44
-//    static var selectedCircleHeight: CGFloat = 44
     static var chevronFontSize: CGFloat = 15
     static var rangeSelectBgColor = Color.colorBrandAccent.opacity(0.2)
     static var cellBgCol = Color.colorBrandPrimary

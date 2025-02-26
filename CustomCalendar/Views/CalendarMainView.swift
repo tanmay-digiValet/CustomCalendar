@@ -17,18 +17,16 @@ struct CalendarMainView: View {
     var disabledDays: [Weekday] = []
     var disabledDates: [Date] = []
     @Binding var mode: Mode
+    @Binding var startTime: Date
+    @Binding var endTime: Date
     
-    // MARK: Local states and variables
     // MARK: initially assigned to first date of lowerBound of permissibleRange (in onAppear),
     // MARK: intended to keep track and enable transition of active month and year.
     @State var helperDate: Date = Date.now.monthStart
-    @State var selectedDate1: Date? = nil
-    @State var selectedDate2: Date? = nil
     @State var scrollViewPosition: Date? = nil
+    
     @State var isMonthYearPickerOpen: Bool = false
     
-    @State var selectedStartTime = Date()
-    @State var selectedEndTime = Date()
     @State var isStartTimePickerOpen = false
     @State var isEndTimePickerOpen = false
     
@@ -40,7 +38,9 @@ struct CalendarMainView: View {
         permissibleRange: ClosedRange<Date>?,
         disabledDays: [Weekday],
         disabledDates: [Date],
-        mode: Binding<Mode>
+        mode: Binding<Mode>,
+        startTime: Binding<Date>,
+        endTime: Binding<Date>
     ) {
         
         self._range = range
@@ -49,6 +49,8 @@ struct CalendarMainView: View {
         self.disabledDates = disabledDates
         self.permissibleRange = permissibleRange
         self._mode = mode
+        self._startTime = startTime
+        self._endTime = endTime
         _calendarViewModel = StateObject(wrappedValue:
                                             CalendarViewModel(
                                                 range: range.wrappedValue,
@@ -130,12 +132,11 @@ struct CalendarMainView: View {
                     range: $range,
                     mode: $mode,
                     scrollViewPosition: $scrollViewPosition,
-//                    isMonthYearPickerOpen: $isMonthYearPickerOpen,
                     calendarViewModel: calendarViewModel
                 )
                 .padding(.horizontal, .rowDateCalendar)
                 
-                TimeSelectView(selectedStartTime: $selectedStartTime, selectedEndTime: $selectedEndTime, isStartTimePickerOpen: $isStartTimePickerOpen, isEndTimePickerOpen: $isEndTimePickerOpen)
+                timeSelectView()
                 
                 Spacer()
                 
@@ -171,15 +172,17 @@ struct CalendarMainView: View {
                     calendarViewModel.chevronCheck()
                 }
             }
-            .disabled(isMonthYearPickerOpen || isStartTimePickerOpen || isEndTimePickerOpen)
-//            .disabled(isMonthYearPickerOpen)
-            .opacity(isMonthYearPickerOpen || isStartTimePickerOpen || isEndTimePickerOpen ? 0.3 : 1)
-//            .opacity(isMonthYearPickerOpen ? 0.5 : 1)
+//            .disabled(isMonthYearPickerOpen || isStartTimePickerOpen || isEndTimePickerOpen)
+            .disabled(isMonthYearPickerOpen)
+//            .opacity(isMonthYearPickerOpen || isStartTimePickerOpen || isEndTimePickerOpen ? 0.3 : 1)
+            .opacity(isMonthYearPickerOpen ? 0.3 : 1)
             
-            if isStartTimePickerOpen || isEndTimePickerOpen {
-                TimeSelectorView(selectedStartTime: $selectedStartTime, selectedEndTime: $selectedEndTime, isStartTimePickerOpen: $isStartTimePickerOpen, isEndTimePickerOpen: $isEndTimePickerOpen)
-                    .shadow(radius: 10)
-            }
+//            if isStartTimePickerOpen || isEndTimePickerOpen {
+////                TimeSelectorView(startTime: $startTime, endTime: $endTime, isStartTimePickerOpen: $isStartTimePickerOpen, isEndTimePickerOpen: $isEndTimePickerOpen)
+//                
+//                timeSelectorView()
+//                    .shadow(radius: 10)
+//            }
             
             if isMonthYearPickerOpen {
                 MonthYearPickerView (          
